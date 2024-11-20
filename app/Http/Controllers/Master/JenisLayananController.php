@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\JenisLayananRequest;
 use App\Models\RefJenisLayanan;
-use Illuminate\Http\Request;
 
 class JenisLayananController extends BaseController
 {
