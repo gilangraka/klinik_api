@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Post;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LayananRequest extends FormRequest
+class StorePostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,10 +22,10 @@ class LayananRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nama' => ['required', 'string'],
-            'tipe_layanan_id' => ['required', 'integer', 'exists:ref_jenis_layanan,id'],
-            'deskripsi' => ['required', 'string'],
-            'biaya' => ['required', 'integer']
+            'judul' => ['required', 'string'],
+            'category_id' => ['required', 'integer', 'exists:ref_post_category,id'],
+            'thumbnail' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:10240'],
+            'content' => ['required', 'string']
         ];
     }
 }
