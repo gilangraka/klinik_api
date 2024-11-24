@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class RefJenisLayanan extends Model
+class TrxFormulirLayanan extends Model
 {
     use HasFactory;
-    protected $table = 'ref_jenis_layanan';
+    protected $table = 'trx_formulir_layanan';
     protected $primaryKey = 'id';
     protected $fillable = [
-        'nama'
+        'formulir_id',
+        'layanan_id'
     ];
 }

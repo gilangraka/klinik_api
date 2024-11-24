@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ref_post_category', function (Blueprint $table) {
+        Schema::create('trx_formulir_layanan', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
+            $table->unsignedBigInteger('formulir_id');
+            $table->unsignedBigInteger('layanan_id');
             $table->timestamps();
+
+            $table->foreign('formulir_id')->references('id')->on('trx_formulir')->cascadeOnDelete();
+            $table->foreign('layanan_id')->references('id')->on('ref_layanan')->cascadeOnDelete();
         });
     }
 
