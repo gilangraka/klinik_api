@@ -11,7 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('trx_post', function (Blueprint $table) {
+            $table->id();
+            $table->string('judul');
+            $table->unsignedBigInteger('category_id');
+            $table->string('thumbnail');
+            $table->longText('content');
+            $table->timestamps();
+
+            $table->foreign('category_id')->references('id')->on('ref_post_category')->cascadeOnDelete();
+        });
     }
 
     /**

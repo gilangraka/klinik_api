@@ -11,7 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('ref_layanan', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            $table->unsignedBigInteger('jenis_layanan_id');
+            $table->string('deskripsi');
+            $table->integer('biaya');
+            $table->timestamps();
+
+            $table->foreign('jenis_layanan_id')->references('id')->on('ref_jenis_layanan')->cascadeOnDelete();
+        });
     }
 
     /**

@@ -11,7 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('trx_formulir', function (Blueprint $table) {
+            $table->id();
+            $table->string('nama');
+            $table->string('usia');
+            $table->string('email');
+            $table->enum('gender', ['laki-laki', 'perempuan']);
+            $table->string('nomor_hp');
+            $table->string('alamat');
+            $table->string('keluhan');
+            $table->timestamp('datetime');
+            $table->string('lokasi')->nullable();
+            $table->integer('is_done')->default(0);
+            $table->timestamps();
+        });
     }
 
     /**
