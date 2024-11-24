@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TrxFormulirRequest;
+use App\Models\Payment;
 use App\Models\RefLayanan;
 use App\Models\TrxFormulir;
 use App\Models\TrxFormulirLayanan;
 use Illuminate\Support\Facades\DB;
+use Xendit\Xendit;
+use Illuminate\Support\Str;
+
 
 class TrxFormulirController extends BaseController
 {
@@ -53,7 +57,27 @@ class TrxFormulirController extends BaseController
 
                 $total_amount += $layanan->biaya;
             }
+
+            // Xendit Config
+            Xendit::setApiKey(config('apikeymu'));
+            $params = [
+                'external_id' => Str::uuid(),
+                'amount' => $total_amount,
+            ];
+            $invoice = \Xendit\Invoice::create($params);
+
+            $payment = new Payment([
+                'external_id' => $params['external_id'],
+                'amount' => $total_amount,
+                'checkout_link' => $invoice['invoice_url'],
+                'status' => 'pending',
+            ]);
+            $payment->save();
+
             DB::commit();
+            return $this->sendResponse([
+                'data' => $invoice['invoice_url']
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->sendError($e->getMessage(), 500);
