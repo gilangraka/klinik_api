@@ -16,4 +16,9 @@ class TrxPost extends Model
         'thumbnail',
         'content'
     ];
+
+    public function post_category()
+    {
+        return $this->belongsTo(RefPostCategory::class, 'category_id');
+    }
 }

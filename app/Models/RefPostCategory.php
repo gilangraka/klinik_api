@@ -13,4 +13,9 @@ class RefPostCategory extends Model
     protected $fillable = [
         'nama'
     ];
+
+    public function posts()
+    {
+        return $this->hasMany(TrxPost::class, 'category_id');
+    }
 }

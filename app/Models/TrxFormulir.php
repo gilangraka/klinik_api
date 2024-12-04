@@ -22,4 +22,9 @@ class TrxFormulir extends Model
         'lokasi',
         'is_done'
     ];
+
+    public function ref_layanan()
+    {
+        return $this->belongsToMany(RefLayanan::class, 'trx_formulir_layanan', 'layanan_id', 'formulir_id');
+    }
 }

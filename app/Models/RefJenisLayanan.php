@@ -13,4 +13,9 @@ class RefJenisLayanan extends Model
     protected $fillable = [
         'nama'
     ];
+
+    public function ref_layanan()
+    {
+        return $this->hasMany(RefLayanan::class, 'tipe_layanan_id');
+    }
 }

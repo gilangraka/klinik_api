@@ -16,4 +16,14 @@ class RefLayanan extends Model
         'deskripsi',
         'biaya'
     ];
+
+    public function ref_jenis_layanan()
+    {
+        return $this->belongsTo(RefJenisLayanan::class, 'tipe_layanan_id');
+    }
+
+    public function trx_formulir()
+    {
+        return $this->belongsToMany(TrxFormulir::class, 'trx_formulir_layanan', 'layanan_id', 'formulir_id');
+    }
 }
