@@ -13,4 +13,6 @@ class NotAvailable extends Model
         'start_time',
         'end_time'
     ];
+
+    public $timestamps = false;
 }

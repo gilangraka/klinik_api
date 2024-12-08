@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\NotAvailable;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckAvailable

@@ -18,7 +18,8 @@ class TrxFormulir extends Model
         'nomor_hp',
         'alamat',
         'keluhan',
-        'datetime',
+        'start_time',
+        'end_time',
         'lokasi',
         'is_done'
     ];

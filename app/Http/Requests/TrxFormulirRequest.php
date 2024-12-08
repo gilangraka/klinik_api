@@ -11,7 +11,7 @@ class TrxFormulirRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,8 @@ class TrxFormulirRequest extends FormRequest
             'nomor_hp' => ['required', 'string', 'max:20'],
             'alamat' => ['required', 'string'],
             'keluhan' => ['required', 'string'],
-            'datetime' => ['required', 'date'],
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
             'lokasi' => ['string'],
             'list_layanan' => ['required', 'array']
         ];

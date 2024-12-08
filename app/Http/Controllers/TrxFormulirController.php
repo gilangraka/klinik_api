@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CheckAvailableRequest;
 use App\Http\Requests\TrxFormulirRequest;
 use App\Models\NotAvailable;
 use App\Models\Payment;
@@ -11,7 +10,6 @@ use App\Models\TrxFormulir;
 use App\Models\TrxFormulirLayanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Xendit\Xendit;
 use Xendit\Configuration;
 use Xendit\Invoice\CreateInvoiceRequest;
 use Xendit\Invoice\InvoiceApi;
@@ -58,6 +56,10 @@ class TrxFormulirController extends BaseController
             $data = new TrxFormulir($request->validated());
             $data->save();
 
+            $available = new NotAvailable($request->validated());
+            $available->formulir_id = $data->id;
+            $available->save();
+
             $list_layanan = $request->list_layanan;
             $total_amount = 0;
 
@@ -82,6 +84,7 @@ class TrxFormulirController extends BaseController
             // Xendit Config
             Configuration::setXenditKey(env('XENDIT_SECRET_KEY'));
             $payment = new Payment([
+                'formulir_id' => $data->id,
                 'external_id' => Str::uuid(),
                 'amount' => $total_amount,
                 'status' => 'pending',
@@ -90,7 +93,9 @@ class TrxFormulirController extends BaseController
             $createInvoice = new CreateInvoiceRequest([
                 'external_id' => $payment['external_id'],
                 'amount' => $payment['amount'],
-                'invoice_duration' => 600
+                'invoice_duration' => 600,
+                'payer_email' => $data->email,
+                'description' => 'Pembayaran klinik'
             ]);
             $apiInstance = new InvoiceApi();
             $generateInvoice = $apiInstance->createInvoice($createInvoice);
@@ -118,9 +123,19 @@ class TrxFormulirController extends BaseController
         $payment_method = $data['payment_method'];
 
         $order = Payment::where('external_id', $external_id)->first();
+
+        if (!$order) {
+            return $this->sendError('Order not found!');
+        }
+
         $order->status = $status;
         $order->payment_method = $payment_method;
         $order->save();
+
+        if ($order->status == 'expired') {
+            $not_available = NotAvailable::where('formulir_id', $order->formulir_id)->first();
+            $not_available->delete();
+        }
 
         return $this->sendResponse([
             'data' => [

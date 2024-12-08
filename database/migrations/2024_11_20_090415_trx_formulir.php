@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('nomor_hp');
             $table->string('alamat');
             $table->string('keluhan');
-            $table->timestamp('datetime');
+            $table->timestamp('start_time');
+            $table->timestamp('end_time');
             $table->string('lokasi')->nullable();
             $table->integer('is_done')->default(0);
             $table->timestamps();
