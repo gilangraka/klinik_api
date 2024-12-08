@@ -23,31 +23,35 @@ class DatabaseSeeder extends Seeder
         $layanan = [
             [
                 'nama' => 'Pijat 1',
-                'jenis_layanan_id' => 1,
+                'jenis_layanan_id' => 1, // ID ini akan diambil setelah jenis_layanan disimpan
                 'deskripsi' => 'Layanan Klinik',
                 'biaya' => 500
             ],
             [
                 'nama' => 'Terapi 1',
-                'jenis_layanan_id' => 2,
+                'jenis_layanan_id' => 2, // ID ini akan diambil setelah jenis_layanan disimpan
                 'deskripsi' => 'Layanan Klinik',
                 'biaya' => 500
             ]
         ];
 
+        // Menyimpan data jenis layanan terlebih dahulu
         foreach ($jenis_layanan as $value) {
-            $data = new RefJenisLayanan([$value]);
-            $data->save();
+            RefJenisLayanan::create(['nama' => $value]);
         }
-        foreach ($layanan as $value) {
-            $data = new RefLayanan($value);
-            $data->save();
-        }
-        // User::factory(10)->create();
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Menyimpan data layanan dengan mengacu pada jenis layanan yang telah disimpan
+        foreach ($layanan as $value) {
+            // Mencari ID jenis layanan berdasarkan nama yang sudah disimpan
+            $jenisLayanan = RefJenisLayanan::where('nama', $value['jenis_layanan_id'])->first();
+
+            // Mengaitkan dengan ID jenis layanan yang benar
+            RefLayanan::create([
+                'nama' => $value['nama'],
+                'jenis_layanan_id' => $jenisLayanan->id,
+                'deskripsi' => $value['deskripsi'],
+                'biaya' => $value['biaya']
+            ]);
+        }
     }
 }

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('payment_method')->nullable();
             $table->timestamps();
 
-            $table->foreign('formulir_id')->references('id')->on('formulir')->cascadeOnDelete();
+            $table->foreign('formulir_id')->references('id')->on('trx_formulir')->cascadeOnDelete();
         });
     }
 
