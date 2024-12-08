@@ -42,13 +42,10 @@ class DatabaseSeeder extends Seeder
 
         // Menyimpan data layanan dengan mengacu pada jenis layanan yang telah disimpan
         foreach ($layanan as $value) {
-            // Mencari ID jenis layanan berdasarkan nama yang sudah disimpan
-            $jenisLayanan = RefJenisLayanan::where('nama', $value['jenis_layanan_id'])->first();
-
             // Mengaitkan dengan ID jenis layanan yang benar
             RefLayanan::create([
                 'nama' => $value['nama'],
-                'jenis_layanan_id' => $jenisLayanan->id,
+                'jenis_layanan_id' => $value['jenis_layanan_id'],
                 'deskripsi' => $value['deskripsi'],
                 'biaya' => $value['biaya']
             ]);
