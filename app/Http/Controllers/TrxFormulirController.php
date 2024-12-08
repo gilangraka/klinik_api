@@ -91,8 +91,8 @@ class TrxFormulirController extends BaseController
             ]);
 
             $createInvoice = new CreateInvoiceRequest([
-                'external_id' => $payment['external_id'],
-                'amount' => $payment['amount'],
+                'external_id' => "$payment->external_id",
+                'amount' => $payment->amount,
                 'invoice_duration' => 600,
                 'payer_email' => $data->email,
                 'description' => 'Pembayaran klinik'
