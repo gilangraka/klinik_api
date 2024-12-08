@@ -27,4 +27,9 @@ class TrxFormulir extends Model
     {
         return $this->belongsToMany(RefLayanan::class, 'trx_formulir_layanan', 'layanan_id', 'formulir_id');
     }
+
+    public function not_available()
+    {
+        return $this->hasOne(NotAvailable::class, 'formulir_id');
+    }
 }

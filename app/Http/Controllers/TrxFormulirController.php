@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CheckAvailableRequest;
 use App\Http\Requests\TrxFormulirRequest;
+use App\Models\NotAvailable;
 use App\Models\Payment;
 use App\Models\RefLayanan;
 use App\Models\TrxFormulir;
 use App\Models\TrxFormulirLayanan;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Xendit\Xendit;
+use Xendit\Configuration;
+use Xendit\Invoice\CreateInvoiceRequest;
+use Xendit\Invoice\InvoiceApi;
 use Illuminate\Support\Str;
 
 
@@ -21,6 +27,21 @@ class TrxFormulirController extends BaseController
     {
         try {
             $data = TrxFormulir::with('trx_pembayaran')->get();
+            return $this->sendResponse($data);
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        try {
+            $data = TrxFormulir::with('trx_pembayaran')->find($id);
+            if (!$data) return $this->sendError('Formulir tidak ditemukan');
+
             return $this->sendResponse($data);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
@@ -59,24 +80,29 @@ class TrxFormulirController extends BaseController
             }
 
             // Xendit Config
-            Xendit::setApiKey(config('apikeymu'));
-            $params = [
+            Configuration::setXenditKey(env('XENDIT_SECRET_KEY'));
+            $payment = new Payment([
                 'external_id' => Str::uuid(),
                 'amount' => $total_amount,
-            ];
-            $invoice = \Xendit\Invoice::create($params);
-
-            $payment = new Payment([
-                'external_id' => $params['external_id'],
-                'amount' => $total_amount,
-                'checkout_link' => $invoice['invoice_url'],
                 'status' => 'pending',
             ]);
+
+            $createInvoice = new CreateInvoiceRequest([
+                'external_id' => $payment['external_id'],
+                'amount' => $payment['amount'],
+                'invoice_duration' => 600
+            ]);
+            $apiInstance = new InvoiceApi();
+            $generateInvoice = $apiInstance->createInvoice($createInvoice);
+
+            $payment->checkout_link = $generateInvoice['invoice_url'];
             $payment->save();
 
             DB::commit();
             return $this->sendResponse([
-                'data' => $invoice['invoice_url']
+                'data' => [
+                    'checkout_link' => $payment->checkout_link
+                ]
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -84,18 +110,23 @@ class TrxFormulirController extends BaseController
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function handleHook(Request $request)
     {
-        try {
-            $data = TrxFormulir::with('trx_pembayaran')->find($id);
-            if (!$data) return $this->sendError('Formulir tidak ditemukan');
+        $data = $request->all();
+        $external_id = $data['external_id'];
+        $status = strtolower($data['status']);
+        $payment_method = $data['payment_method'];
 
-            return $this->sendResponse($data);
-        } catch (\Exception $e) {
-            return $this->sendError($e->getMessage(), 500);
-        }
+        $order = Payment::where('external_id', $external_id)->first();
+        $order->status = $status;
+        $order->payment_method = $payment_method;
+        $order->save();
+
+        return $this->sendResponse([
+            'data' => [
+                'status' => $status,
+                'payment_method' => $payment_method,
+            ]
+        ]);
     }
 }

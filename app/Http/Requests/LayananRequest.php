@@ -23,7 +23,7 @@ class LayananRequest extends FormRequest
     {
         return [
             'nama' => ['required', 'string'],
-            'tipe_layanan_id' => ['required', 'integer', 'exists:ref_jenis_layanan,id'],
+            'jenis_layanan_id' => ['required', 'integer', 'exists:ref_jenis_layanan,id'],
             'deskripsi' => ['required', 'string'],
             'biaya' => ['required', 'integer']
         ];

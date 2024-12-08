@@ -12,7 +12,7 @@ class RefLayanan extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'nama',
-        'tipe_layanan_id',
+        'jenis_layanan_id',
         'deskripsi',
         'biaya'
     ];

@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment', function (Blueprint $table) {
+        Schema::create('not_availables', function (Blueprint $table) {
             $table->id();
-            $table->string('external_id');
-            $table->decimal('amount');
-            $table->string('checkout_link');
-            $table->string('status')->nullable();
-            $table->timestamps();
+            $table->unsignedBigInteger('formulir_id')->nullable();
+            $table->timestamp('start_time');
+            $table->timestamp('end_time');
+
+            $table->foreign('formulir_id')->references('id')->on('trx_formulir');
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('not_availables');
     }
 };
