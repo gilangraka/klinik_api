@@ -84,7 +84,9 @@ class TrxFormulirController extends BaseController
             ])
                 ->with([
                     'payments:id,formulir_id,external_id,amount,status',
-                    'ref_layanan:id,nama,biaya'
+                    'ref_layanan:id,nama,biaya' => function ($query) {
+                        $query->withoutPivot();
+                    }
                 ])
                 ->find($id);
             if (!$data) return $this->sendError('Formulir tidak ditemukan');
