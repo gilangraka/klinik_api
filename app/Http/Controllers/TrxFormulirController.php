@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\RefLayanan;
 use App\Models\TrxFormulir;
 use App\Models\TrxFormulirLayanan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Xendit\Configuration;
@@ -31,6 +32,13 @@ class TrxFormulirController extends BaseController
             $end_date = $params['end_date'] ?? null;
             $is_done = $params['is_done'] ?? null;
 
+            if ($status) {
+                $status = explode(',', $status);
+            }
+            if ($is_done) {
+                $is_done = explode(',', $is_done);
+            }
+
             $data = TrxFormulir::select([
                 'id',
                 'nama',
@@ -50,7 +58,10 @@ class TrxFormulirController extends BaseController
                 )
                 ->when(
                     !is_null($start_date) && !is_null($end_date),
-                    fn($q) => $q->whereBetween('created_at', [$start_date, $end_date])
+                    fn($q) => $q->whereBetween('created_at', [
+                        Carbon::parse($start_date)->startOfDay(),
+                        Carbon::parse($end_date)->endOfDay()
+                    ])
                 )
                 ->when(
                     !is_null($is_done),
