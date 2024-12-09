@@ -17,4 +17,9 @@ class Payment extends Model
         'status',
         'payment_method'
     ];
+
+    public function trx_formulir()
+    {
+        return $this->belongsTo(TrxFormulir::class, 'formulir_id');
+    }
 }

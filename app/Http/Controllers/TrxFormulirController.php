@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListFormulirRequest;
 use App\Http\Requests\TrxFormulirRequest;
 use App\Models\NotAvailable;
 use App\Models\Payment;
@@ -20,11 +21,44 @@ class TrxFormulirController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ListFormulirRequest $request)
     {
         try {
-            $data = TrxFormulir::with('trx_pembayaran')->get();
-            return $this->sendResponse($data);
+            $params = $request->validated();
+            $per_page = $params['per_page'] ?? 10;
+            $status = $params['status'] ?? null;
+            $start_date = $params['start_date'] ?? null;
+            $end_date = $params['end_date'] ?? null;
+            $is_done = $params['is_done'] ?? null;
+
+            $data = TrxFormulir::select([
+                'id',
+                'nama',
+                'nomor_hp',
+                'start_time',
+                'end_time',
+                'is_done'
+            ])
+                ->with([
+                    'payments:id,formulir_id,external_id,status'
+                ])
+                ->when(
+                    !is_null($status),
+                    fn($q) => $q->whereHas('payments', function ($query) use ($status) {
+                        $query->whereIn('status', explode(',', $status));
+                    })
+                )
+                ->when(
+                    !is_null($start_date) && !is_null($end_date),
+                    fn($q) => $q->whereBetween('created_at', [$start_date, $end_date])
+                )
+                ->when(
+                    !is_null($is_done),
+                    fn($q) => $q->whereIn('is_done', explode(',', $is_done))
+                )
+                ->paginate($per_page);
+
+            return $this->sendResponse($data, '', true);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }
