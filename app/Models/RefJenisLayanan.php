@@ -16,6 +16,6 @@ class RefJenisLayanan extends Model
 
     public function ref_layanan()
     {
-        return $this->hasMany(RefLayanan::class, 'tipe_layanan_id');
+        return $this->hasMany(RefLayanan::class, 'jenis_layanan_id');
     }
 }

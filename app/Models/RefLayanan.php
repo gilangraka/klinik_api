@@ -19,7 +19,7 @@ class RefLayanan extends Model
 
     public function ref_jenis_layanan()
     {
-        return $this->belongsTo(RefJenisLayanan::class, 'tipe_layanan_id');
+        return $this->belongsTo(RefJenisLayanan::class, 'jenis_layanan_id');
     }
 
     public function trx_formulir()

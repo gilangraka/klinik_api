@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\LayananRequest;
+use App\Http\Requests\ListRequest;
 use App\Models\RefLayanan;
 
 class LayananController extends BaseController
@@ -11,11 +12,15 @@ class LayananController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ListRequest $request)
     {
         try {
-            $data = RefLayanan::all();
-            return $this->sendResponse($data);
+            $per_page = $request->per_page ?? 10;
+
+            $data = RefLayanan::with(['ref_jenis_layanan:id,nama'])
+                ->select(['id', 'nama', 'deskripsi', 'biaya', 'jenis_layanan_id'])
+                ->paginate($per_page);
+            return $this->sendResponse($data, '', true);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }
@@ -42,7 +47,9 @@ class LayananController extends BaseController
     public function show(string $id)
     {
         try {
-            $data = RefLayanan::find($id);
+            $data = RefLayanan::with(['ref_jenis_layanan:id,nama'])
+                ->select(['id', 'nama', 'deskripsi', 'biaya', 'jenis_layanan_id'])
+                ->find($id);
             if (!$data) return $this->sendError('Layanan tidak ditemukan');
 
             return $this->sendResponse($data);
