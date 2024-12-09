@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\JenisLayananRequest;
+use App\Http\Requests\ListRequest;
 use App\Models\RefJenisLayanan;
 
 class JenisLayananController extends BaseController
@@ -11,11 +12,13 @@ class JenisLayananController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ListRequest $request)
     {
         try {
-            $data = RefJenisLayanan::all();
-            return $this->sendResponse($data);
+            $per_page = $request->per_page ?? 10;
+            $data = RefJenisLayanan::select(['id', 'nama'])->paginate($per_page);
+
+            return $this->sendResponse($data, '', true);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }
@@ -24,7 +27,7 @@ class JenisLayananController extends BaseController
     public function Show($id)
     {
         try {
-            $data = RefJenisLayanan::find($id);
+            $data = RefJenisLayanan::select(['id', 'nama'])->find($id);
             if (!$data) return $this->sendError('Jenis layanan tidak ditemukan!');
 
             return $this->sendResponse($data);

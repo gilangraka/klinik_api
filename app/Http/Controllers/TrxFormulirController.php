@@ -15,7 +15,6 @@ use Xendit\Invoice\CreateInvoiceRequest;
 use Xendit\Invoice\InvoiceApi;
 use Illuminate\Support\Str;
 
-
 class TrxFormulirController extends BaseController
 {
     /**

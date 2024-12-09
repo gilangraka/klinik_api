@@ -6,12 +6,18 @@ use Illuminate\Http\Request;
 
 class BaseController extends Controller
 {
-    public function sendResponse($result, $message = 'success')
+    public function sendResponse($result, $message = 'success', $metadata = false)
     {
         $response = [
             'success' => true,
             'message' => $message,
-            'data'    => $result,
+            'metadata' => $metadata == true ? [
+                'per_page' => $result->perPage(),
+                'current_page' => $result->currentPage(),
+                'total_row' => $result->total(),
+                'total_page' => $result->lastPage()
+            ] : [],
+            'data'    => $metadata == true ? $result->getCollection() : $result,
         ];
         return response()->json($response, 200);
     }
