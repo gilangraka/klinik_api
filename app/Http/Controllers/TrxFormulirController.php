@@ -41,7 +41,7 @@ class TrxFormulirController extends BaseController
                 'is_done'
             ])
                 ->with([
-                    'payments:id,formulir_id,external_id,status'
+                    'payments:id,formulir_id,external_id,amount,status',
                 ])
                 ->when(
                     !is_null($status),
@@ -74,7 +74,19 @@ class TrxFormulirController extends BaseController
     public function show(string $id)
     {
         try {
-            $data = TrxFormulir::with('trx_pembayaran')->find($id);
+            $data = TrxFormulir::select([
+                'id',
+                'nama',
+                'nomor_hp',
+                'start_time',
+                'end_time',
+                'is_done'
+            ])
+                ->with([
+                    'payments:id,formulir_id,external_id,amount,status',
+                    'ref_layanan:id,nama,biaya'
+                ])
+                ->find($id);
             if (!$data) return $this->sendError('Formulir tidak ditemukan');
 
             return $this->sendResponse($data);
