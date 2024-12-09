@@ -84,12 +84,31 @@ class TrxFormulirController extends BaseController
             ])
                 ->with([
                     'payments:id,formulir_id,external_id,amount,status',
-                    'ref_layanan:id,nama,biaya' => function ($query) {
-                        $query->withoutPivot();
-                    }
+                    'ref_layanan:id,nama,biaya'
                 ])
                 ->find($id);
             if (!$data) return $this->sendError('Formulir tidak ditemukan');
+
+            $data = [
+                'id' => $data['id'],
+                'nama' => $data['nama'],
+                'nomor_hp' => $data['nomor_hp'],
+                'start_time' => $data['start_time'],
+                'end_time' => $data['end_time'],
+                'is_done' => $data['is_done'],
+                'payments' => [
+                    'id' => $data['payments']['id'],
+                    'formulir_id' => $data['payments']['formulir_id'],
+                    'external_id' => $data['payments']['external_id'],
+                    'amount' => $data['payments']['amount'],
+                    'status' => $data['payments']['status']
+                ],
+                'ref_layanan' => [
+                    'id' => $data['ref_layanan']['id'],
+                    'nama' => $data['ref_layanan']['nama'],
+                    'biaya' => $data['ref_layanan']['biaya']
+                ]
+            ];
 
             return $this->sendResponse($data);
         } catch (\Exception $e) {
