@@ -23,10 +23,10 @@ class ListFormulirRequest extends FormRequest
     {
         return [
             'per_page' => ['nullable', 'integer'],
-            'status' => ['nullable', 'array', 'in:pending,paid,expired'],
+            'status' => ['nullable'],
             'start_date' => ['nullable', 'date', 'required_with:end_date'],
             'end_date' => ['nullable', 'date', 'after:start_date', 'required_with:start_date'],
-            'is_done' => ['nullable', 'array', 'in:0,1']
+            'is_done' => ['nullable']
         ];
     }
 }
