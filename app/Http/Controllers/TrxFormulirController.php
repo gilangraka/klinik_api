@@ -32,13 +32,6 @@ class TrxFormulirController extends BaseController
             $end_date = $params['end_date'] ?? null;
             $is_done = $params['is_done'] ?? null;
 
-            if ($status) {
-                $status = explode(',', $status);
-            }
-            if ($is_done) {
-                $is_done = explode(',', $is_done);
-            }
-
             $data = TrxFormulir::select([
                 'id',
                 'nama',
