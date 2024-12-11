@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\CheckAvailable;
+use App\Http\Requests\CheckAvailableRequest;
 use App\Http\Requests\ListFormulirRequest;
 use App\Http\Requests\TrxFormulirRequest;
 use App\Models\NotAvailable;
@@ -160,6 +162,32 @@ class TrxFormulirController extends BaseController
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            return $this->sendError($e->getMessage(), 500);
+        }
+    }
+
+    public function checkAvailable()
+    {
+        try {
+            return $this->sendResponse(null, 'Available');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
+        }
+    }
+
+    public function setDone($id)
+    {
+        try {
+            $data = TrxFormulir::find($id);
+
+            if (!$data) {
+                return $this->sendError('Formulir tidak ditemukan');
+            }
+
+            $data->is_done = 1;
+            $data->save();
+            return $this->sendResponse(null);
+        } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }
     }
