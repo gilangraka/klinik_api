@@ -16,9 +16,18 @@ class LayananController extends BaseController
     {
         try {
             $per_page = $request->per_page ?? 10;
+            $search = $request->search ?? null;
 
             $data = RefLayanan::with(['ref_jenis_layanan:id,nama'])
                 ->select(['id', 'nama', 'deskripsi', 'biaya', 'jenis_layanan_id'])
+                ->when(
+                    !is_null($search),
+                    function ($query) use ($search) {
+                        $query->whereHas('ref_jenis_layanan', function ($q) use ($search) {
+                            $q->where('nama', 'like', "%$search%");
+                        });
+                    }
+                )
                 ->paginate($per_page);
             return $this->sendResponse($data, '', true);
         } catch (\Exception $e) {
